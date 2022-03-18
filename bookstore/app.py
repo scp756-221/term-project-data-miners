@@ -14,6 +14,7 @@ from flask import Blueprint
 from flask import Flask
 from flask import request
 
+import simplejson as json
 
 # The path to the file (CSV format) containing the sample data
 DB_PATH = '/data/book.csv'
@@ -99,6 +100,19 @@ def delete_book(book_id):
         }
         return app.make_response((response, 404))
     return {}
+
+
+@bp.route('/<book_id>', methods=['PUT'])
+def update(book_id):
+    try:
+        content = request.get_json()
+        author = content['Author']
+        book_title = content['BookTitle']
+    except Exception:
+        return json.dumps({"message": "error reading arguments"})
+    database[book_id] = {"Author":author,"BookTitle":book_title}
+    return json.dumps({"Author": author, "BookTitle": book_title})
+
 
 @bp.route('/shutdown', methods=['GET'])
 def shutdown():
