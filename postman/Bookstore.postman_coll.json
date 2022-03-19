@@ -1,0 +1,249 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Bookstore API",
+		"_postman_id": "7f4a15c9-1278-ceaf-d95d-6d5f0a53478a",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Retrieve books",
+			"request": {
+				"url": "http://0.0.0.0:30003/api/v1/book/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": [
+				{
+					"id": "0dce76fe-2bac-4b42-9efe-e8743607b48d",
+					"name": "Retrieve books",
+					"originalRequest": {
+						"url": "http://0.0.0.0:30003/api/v1/book/",
+						"method": "GET",
+						"header": [],
+						"body": {}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"_postman_previewtype": "text",
+					"header": [
+						{
+							"name": "content-length",
+							"key": "content-length",
+							"value": "917",
+							"description": "The length of the response body in octets (8-bit bytes)"
+						},
+						{
+							"name": "content-type",
+							"key": "content-type",
+							"value": "application/json",
+							"description": "The mime type of this content"
+						},
+						{
+							"name": "date",
+							"key": "date",
+							"value": "Thu, 17 Mar 2022 02:03:18 GMT",
+							"description": "The date and time that the message was sent"
+						},
+						{
+							"name": "server",
+							"key": "server",
+							"value": "Werkzeug/1.0.1 Python/3.8.6",
+							"description": "A name for the server"
+						}
+					],
+					"cookie": [],
+					"responseTime": 121,
+					"body": "{\"Count\":9,\"Items\":[{\"Author\":\"James Clear\",\"BookTitle\":\"Atomic Habits\",\"book_id\":\"6ecfafd0-8a35-4af6-a9e2-cbd79b3abeea\"},{\"Author\":\"Colleen Hoover\",\"BookTitle\":\"It Ends With Us\",\"book_id\":\"c2573193-f333-49e2-abec-182915747756\"},{\"Author\":\"Taylor Jenkins Reid\",\"BookTitle\":\"The Seven Husbands Of Evelyn Hugo\",\"book_id\":\"22e47f97-11ca-4c3c-8e77-f3068fddaf6e\"},{\"Author\":\"Colleen Hoover\",\"BookTitle\":\"Verity\",\"book_id\":\"bb9e9105-6224-4a60-aabd-8d29cc4b1349\"},{\"Author\":\"Peter Schweizer\",\"BookTitle\":\"Red-Handed\",\"book_id\":\"0894ddc7-0c84-4f13-a037-ddcaa1134ec8\"},{\"Author\":\"xyz\",\"BookTitle\":\"abc\",\"book_id\":\"880da07e-715f-431b-86d0-69a93b381b3b\"},{\"Author\":\"xyz\",\"BookTitle\":\"abc\",\"book_id\":\"0006bf3e-e1c0-4fd2-81d6-971678e82517\"},{\"Author\":\"xyz\",\"BookTitle\":\"abc\",\"book_id\":\"66de3bb3-3066-48a3-9d2c-a68144887852\"},{\"Author\":\"Paulo Coehlo\",\"BookTitle\":\"The Alchemist\",\"book_id\":\"9868a286-5373-42a6-abd8-08a88eba5fc0\"}]}\n"
+				}
+			]
+		},
+		{
+			"name": "Retrieve one book",
+			"request": {
+				"url": "http://0.0.0.0:30003/api/v1/book/c2573193-f333-49e2-abec-182915747756",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": [
+				{
+					"id": "047a0a1d-fa65-4622-a654-632d69cd44d2",
+					"name": "Retrieve one book",
+					"originalRequest": {
+						"url": "http://0.0.0.0:30003/api/v1/book/c2573193-f333-49e2-abec-182915747756",
+						"method": "GET",
+						"header": [],
+						"body": {}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"_postman_previewtype": "text",
+					"header": [
+						{
+							"name": "content-length",
+							"key": "content-length",
+							"value": "129",
+							"description": "The length of the response body in octets (8-bit bytes)"
+						},
+						{
+							"name": "content-type",
+							"key": "content-type",
+							"value": "application/json",
+							"description": "The mime type of this content"
+						},
+						{
+							"name": "date",
+							"key": "date",
+							"value": "Thu, 17 Mar 2022 02:03:36 GMT",
+							"description": "The date and time that the message was sent"
+						},
+						{
+							"name": "server",
+							"key": "server",
+							"value": "Werkzeug/1.0.1 Python/3.8.6",
+							"description": "A name for the server"
+						}
+					],
+					"cookie": [],
+					"responseTime": 41,
+					"body": "{\"Count\":1,\"Items\":[{\"Author\":\"Colleen Hoover\",\"BookTitle\":\"It Ends With Us\",\"book_id\":\"c2573193-f333-49e2-abec-182915747756\"}]}\n"
+				}
+			]
+		},
+		{
+			"name": "Add one book",
+			"request": {
+				"url": "http://0.0.0.0:30003/api/v1/book/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Author\": \"Paulo Coehlo\",\n\t\"BookTitle\": \"The Alchemist\"\n\t\n}"
+				},
+				"description": ""
+			},
+			"response": [
+				{
+					"id": "b550fde5-8475-4e1c-a8dc-35870a4b20dc",
+					"name": "Add one book",
+					"originalRequest": {
+						"url": "http://0.0.0.0:30003/api/v1/book/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Author\": \"Paulo Coehlo\",\n\t\"BookTitle\": \"The Alchemist\"\n\t\n}"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"_postman_previewtype": "text",
+					"header": [
+						{
+							"name": "content-length",
+							"key": "content-length",
+							"value": "51",
+							"description": "The length of the response body in octets (8-bit bytes)"
+						},
+						{
+							"name": "content-type",
+							"key": "content-type",
+							"value": "application/json",
+							"description": "The mime type of this content"
+						},
+						{
+							"name": "date",
+							"key": "date",
+							"value": "Thu, 17 Mar 2022 02:03:43 GMT",
+							"description": "The date and time that the message was sent"
+						},
+						{
+							"name": "server",
+							"key": "server",
+							"value": "Werkzeug/1.0.1 Python/3.8.6",
+							"description": "A name for the server"
+						}
+					],
+					"cookie": [],
+					"responseTime": 176,
+					"body": "{\"book_id\":\"86bfebac-efc5-4f57-b18b-177d16bc3bd9\"}\n"
+				}
+			]
+		},
+		{
+			"name": "Delete one book copy",
+			"request": {
+				"url": "http://0.0.0.0:30003/api/v1/book/26e6462c-eacf-40bb-b4d0-d683966e2624",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": [
+				{
+					"id": "e993a21e-ed3a-4238-98e6-574cc6faae35",
+					"name": "Delete one book copy",
+					"originalRequest": {
+						"url": "http://0.0.0.0:30003/api/v1/book/26e6462c-eacf-40bb-b4d0-d683966e2624",
+						"method": "DELETE",
+						"header": [],
+						"body": {}
+					},
+					"status": "NOT FOUND",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"_postman_previewtype": "text",
+					"header": [
+						{
+							"name": "content-length",
+							"key": "content-length",
+							"value": "23",
+							"description": "The length of the response body in octets (8-bit bytes)"
+						},
+						{
+							"name": "content-type",
+							"key": "content-type",
+							"value": "application/json",
+							"description": "The mime type of this content"
+						},
+						{
+							"name": "date",
+							"key": "date",
+							"value": "Thu, 17 Mar 2022 02:03:50 GMT",
+							"description": "The date and time that the message was sent"
+						},
+						{
+							"name": "server",
+							"key": "server",
+							"value": "Werkzeug/1.0.1 Python/3.8.6",
+							"description": "A name for the server"
+						}
+					],
+					"cookie": [],
+					"responseTime": 47,
+					"body": "{\"Count\":0,\"Items\":[]}\n"
+				}
+			]
+		}
+	]
+}
