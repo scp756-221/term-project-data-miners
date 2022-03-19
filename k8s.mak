@@ -16,7 +16,9 @@
 
 # These will be filled in by template processor
 CREG=ghcr.io
+
 REGID=kishan-thumar
+
 AWS_REGION=us-west-2
 
 # Keep all the logs out of main directory
@@ -187,6 +189,7 @@ dynamodb-init: $(LOG_DIR)/dynamodb-init.log
 $(LOG_DIR)/dynamodb-init.log: cluster/cloudformationdynamodb.json
 	@# "|| true" suffix because command fails when stack already exists
 	@# (even with --on-failure DO_NOTHING, a nonzero error code is returned)
+
 	$(AWS) cloudformation create-stack --stack-name db-kishan-thumar --template-body file://$< || true | tee $(LOG_DIR)/dynamodb-init.log
 	# Must give DynamoDB time to create the tables before running the loader
 	sleep 20
