@@ -29,7 +29,7 @@ MK_CTX=minikube
 DRIVER=virtualbox
 
 # developed and tested against 1.19.2
-KVER=1.19.4
+KVER=1.23.4
 
 start:
 	$(MK) start -p $(MK_CTX) --kubernetes-version='$(KVER)' driver=$(DRIVER) | tee $(LOG_DIR)/mk-start.log

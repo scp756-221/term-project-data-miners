@@ -6,7 +6,6 @@ Simple command-line interface to music service
 import argparse
 import cmd
 import re
-from subprocess import run, PIPE
 
 # Installed packages
 import requests
@@ -19,28 +18,22 @@ DEFAULT_AUTH = 'Bearer A'
 def parse_args():
     argp = argparse.ArgumentParser(
         'mcli',
-        description='Command-line query interface for all microservices'
+        description='Command-line query interface to music service'
         )
-    # argp.add_argument(
-    #     'name',
-    #     help="DNS name or IP address of microservice"
-    #     )
-    # argp.add_argument(
-    #     'port',
-    #     type=int,
-    #     help="Port number of microservice"
-    #     )
-    # argp.add_argument(
-    #     'microservice',
-    #     help="Microservice type"
-    # )
+    argp.add_argument(
+        'name',
+        help="DNS name or IP address of music server"
+        )
+    argp.add_argument(
+        'port',
+        type=int,
+        help="Port number of music server"
+        )
     return argp.parse_args()
 
 
-def get_url(name, port,mode):
-# , microservice):
-    return "http://{}:{}/api/v1/{}/".format(name, port,mode)
-    # , microservice)
+def get_url(name, port):
+    return "http://{}:{}/api/v1/music/".format(name, port)
 
 
 def parse_quoted_strings(arg):
@@ -57,18 +50,12 @@ def parse_quoted_strings(arg):
 
 class Mcli(cmd.Cmd):
     def __init__(self, args):
-        self.mode = input("Enter service mode:")
-        # self.name = args.name
-        # self.port = args.port
-        # self.microservice = args.microservice
+        self.name = args.name
+        self.port = args.port
         cmd.Cmd.__init__(self)
-        self.prompt = 'ql: '
-        self.maps = {
-            'user': {'host': '172.17.0.6', 'port': '30002'},
-            'music': {'host': '172.17.0.4', 'port': '30001'}
-        }
+        self.prompt = 'mql: '
         self.intro = """
-Command-line interface to all microservices.
+Command-line interface to music service.
 Enter 'help' for command list.
 'Tab' character autocompletes commands.
 """
@@ -96,52 +83,23 @@ Enter 'help' for command list.
         all songs and will instead return an empty list if
         no parameter is provided.
         """
-        # print(arg)
-        url = get_url(self.maps[self.mode]['host'], self.maps[self.mode]['port'], self.mode)
-        if(self.mode == "music"):
-            # , self.microservice)
-            print(self.maps)
-            # if self.microservicxe == 'music':
-            r = requests.get(
-                url+arg.strip(),
-                headers={'Authorization': DEFAULT_AUTH}
-                )
-            if r.status_code != 200:
-                print("Non-successful status code:", r.status_code)
-            items = r.json()
-            if 'Count' not in items:
-                print("0 items returned")
-                return
-            print("{} items returned".format(items['Count']))
-            for i in items['Items']:
-                print("{}  {:20.20s} {}".format(
-                    i['music_id'],
-                    i['Artist'],
-                    i['SongTitle']))
-
-        elif(self.mode == "user"):
-            r = requests.get(
-                url+arg.strip(),
-                headers={'Authorization': DEFAULT_AUTH}
-                )
-            if r.status_code != 200:
-                print("Non-successful status code:", r.status_code)
-            print("CONTENT", r.content)
-            items = r.json()
-            if 'Count' not in items:
-                print("0 items returned")
-                return
-            print("{} items returned".format(items['Count']))
-            for i in items['Items']:
-                print("{} {} {} {}".format(
-                    i['user_id'],
-                    i['email'],
-                    i['fname'],
-                    i['lname']))
-    
-    def do_changeMode(self, arg):
-        self.mode = arg.strip().split(' ')[-1]
-
+        url = get_url(self.name, self.port)
+        r = requests.get(
+            url+arg.strip(),
+            headers={'Authorization': DEFAULT_AUTH}
+            )
+        if r.status_code != 200:
+            print("Non-successful status code:", r.status_code)
+        items = r.json()
+        if 'Count' not in items:
+            print("0 items returned")
+            return
+        print("{} items returned".format(items['Count']))
+        for i in items['Items']:
+            print("{}  {:20.20s} {}".format(
+                i['music_id'],
+                i['Artist'],
+                i['SongTitle']))
 
     def do_create(self, arg):
         """
