@@ -6,6 +6,7 @@ Simple command-line interface to bookstore service
 import argparse
 import cmd
 import re
+import sys 
 
 # Installed packages
 import requests
@@ -60,8 +61,8 @@ Enter 'help' for command list.
 'Tab' character autocompletes commands.
 """
 
+    # Code to fetch booklist from db and print in cli
     def do_read(self, arg):
-        
         url = get_url(self.name, self.port)
         r = requests.get(
             url+arg.strip(),
@@ -80,8 +81,8 @@ Enter 'help' for command list.
                 i['Author'],
                 i['BookTitle']))
 
+    # Code to add a new book to db
     def do_create(self, arg):
-
         url = get_url(self.name, self.port)
         args = parse_quoted_strings(arg)
         payload = {
@@ -95,16 +96,30 @@ Enter 'help' for command list.
         )
         print(r.json())
 
+    # Code to delete the existing book in db 
     def do_delete(self, arg):
-    
         url = get_url(self.name, self.port)
         r = requests.delete(
             url+arg.strip(),
-            headers={'Authorization': DEFAULT_AUTH}
-            )
+            headers={'Authorization': DEFAULT_AUTH})
         if r.status_code != 200:
             print("Non-successful status code:", r.status_code)
 
+    # Code to update existing book in db
+    def do_update(self,arg):
+        url = get_url(self.name, self.port)
+        args = parse_quoted_strings(arg)
+        payload = {
+            'Author': args[0],
+            'BookTitle': args[1]
+        }
+        r = requests.put(
+            url+arg.strip(),
+            json=payload)
+        if r.status_code != 200:
+            print("Non-successful status code:", r.status_code)
+
+    # Code to shutdown bookservice
     def do_shutdown(self, arg):
         """
         Tell the bookstore service to shut down.
@@ -112,11 +127,13 @@ Enter 'help' for command list.
         url = get_url(self.name, self.port)
         r = requests.get(
             url+'shutdown',
-            headers={'Authorization': DEFAULT_AUTH}
-            )
+            headers={'Authorization': DEFAULT_AUTH})
         if r.status_code != 200:
             print("Non-successful status code:", r.status_code)
 
+    # Code to shutdown bookservice 
+    def do_exit(self, arg):
+        sys.exit()
 
 if __name__ == '__main__':
     args = parse_args()
