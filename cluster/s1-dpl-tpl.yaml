@@ -37,18 +37,18 @@ spec:
         image: 'ZZ-CR-ID/ZZ-REG-ID/cmpt756s1:v1'
         imagePullPolicy: Always
         ports:
-        - containerPort: 30001
+        - containerPort: 30002
         livenessProbe:
           httpGet:
             path: /api/v1/user/health
-            port: 30001
+            port: 30002
           initialDelaySeconds: 10
           periodSeconds: 5
           failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /api/v1/user/readiness
-            port: 30001
+            port: 30002
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 2
