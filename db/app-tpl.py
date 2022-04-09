@@ -104,6 +104,19 @@ def read():
                            KeyConditionExpression=Key(table_id).eq(objkey))
     return response
 
+@bp.route('/readall', methods=['GET'])
+def readall():
+    headers = request.headers  # noqa: F841
+    # check header here
+    objtype = urllib.parse.unquote_plus(request.args.get('objtype'))
+    table_name = objtype.capitalize()+"-ZZ-REG-ID"
+    table = dynamodb.Table(table_name)
+    response = table.scan()
+    data = response['Items']
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        data.extend(response['Items'])
+    return str(data)
 
 @bp.route('/write', methods=['POST'])
 def write():
@@ -125,6 +138,29 @@ def write():
     return json.dumps(
         ({table_id: payload[table_id]}, returnval)['returnval' in globals()])
 
+@bp.route('/writecsv', methods=['POST'])
+def writecsv():
+    headers = request.headers  # noqa: F841
+    # check header here
+    content = request.get_json()
+    returnval = ''
+    csv_file = os.path.abspath(os.path.join('..','data',os.path.basename(content['file'])))
+    with open(csv_file, 'r') as f:
+        next(f)
+        for line in f:
+            ot, author, book = line.rstrip().split(',')
+            table_name = ot.capitalize()+"-ZZ-REG-ID"
+            table_id = ot + "_id"
+            payload= {
+                table_id: str(uuid.uuid4()),
+                "objtype":ot,   
+                "Author": author,
+                "Book_Title": book
+            }
+            table = dynamodb.Table(table_name)
+            response = table.put_item(Item=payload)
+            returnval = returnval + f"\n\nPayload: {payload} -- \t -- table:{table} -- \t -- {response}"
+    return returnval
 
 def decode_auth_token(token):
     '''Given an auth token in Base64 encoding, return the original string'''
