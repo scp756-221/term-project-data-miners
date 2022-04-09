@@ -41,18 +41,18 @@ spec:
           - name: EXER
             value: v1
         ports:
-        - containerPort: 30004
+        - containerPort: 30001
         livenessProbe:
           httpGet:
             path: /api/v1/music/health
-            port: 30004
+            port: 30001
           initialDelaySeconds: 10
           periodSeconds: 5
           failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /api/v1/music/readiness
-            port: 30004
+            port: 30001
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 2
