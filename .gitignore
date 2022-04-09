@@ -1,3 +1,8 @@
+# make file
+api.mak
+k8s.mak
+eks.mak
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
