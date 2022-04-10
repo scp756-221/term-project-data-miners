@@ -42,6 +42,6 @@ spec:
       destination:
         host: cmpt756s2
         port:
-          number: 30004
+          number: 30001
         subset: v1
       
