@@ -41,6 +41,19 @@ object RMusic {
 
 }
 
+object RBook {
+
+  val feeder = csv("book.csv").eager.random
+
+  val rbook = forever("i") {
+    feed(feeder)
+    .exec(http("RBook ${i}")
+      .get("/api/v1/book/${UUID}"))
+      .pause(1)
+  }
+
+}
+
 object RUser {
 
   val feeder = csv("users.csv").eager.circular
@@ -131,6 +144,15 @@ class ReadMusicSim extends ReadTablesSim {
 
   setUp(
     scnReadMusic.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
+  ).protocols(httpProtocol)
+}
+
+class ReadBookSim extends ReadTablesSim {
+  val scnReadBook = scenario("ReadBook")
+    .exec(RBook.rbook)
+
+  setUp(
+    scnReadBook.inject(atOnceUsers(Utility.envVarToInt("USERS", 1)))
   ).protocols(httpProtocol)
 }
 
