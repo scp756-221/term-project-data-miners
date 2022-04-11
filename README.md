@@ -1,52 +1,72 @@
-# SFU CMPT 756 main project directory
+# Dataminers: CMPT 756 Main Project Directory
 
 This is the course repo for CMPT 756 (Spring 2022)
 
 You will find resources for your assignments and term project here.
 
+### 1. Prerequisites
+**Note**: This project has been developed on the local machine and not in the Ubuntu Container(`./tools/shell.sh`). 
+- Install [`istioctl`](https://istio.io/latest/docs/setup/install/istioctl/), [`kubectl`](https://kubernetes.io/docs/tasks/tools/), [`eksctl`](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html), [`helm`](https://helm.sh/docs/intro/install/) on your local machine.
+- Create a [personal access token (PAT)](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token) for your GitHub account. You will need the three scopes: [read:packages], [write:packages] and [delete:packages]. Save your token in the file `cluster/ghcr.io-token.txt`
+- Instantiate configuration template:
+    - Make a copy of `tpl-vars-blank.txt` named `tpl-vars.txt`, in the same directory.
+    - On the line starting `ZZ-REG-ID=`, append your GitHub userid.(Note that there are no spaces around the = sign.)
+    - Similarly, fill `ZZ-AWS-REGION=us-west-2`, `ZZ-AWS-ACCESS-KEY-ID=<access-key-of-your-acc>`, `ZZ-AWS-SECRET-ACCESS-KEY=<secete-key-of-your-acc>`
+- Fill the `REGID=` with your GitHub userid in `dataminers.mak`
 
-### 1. Instantiate the template files
 
-#### Fill in the required values in the template variable file
+### 2. Getting Started
 
-Copy the file `cluster/tpl-vars-blank.txt` to `cluster/tpl-vars.txt`
-and fill in all the required values in `tpl-vars.txt`.  These include
-things like your AWS keys, your GitHub signon, and other identifying
-information.  See the comments in that file for details. Note that you
-will need to have installed Gatling
-(https://gatling.io/open-source/start-testing/) first, because you
-will be entering its path in `tpl-vars.txt`.
-
-#### Instantiate the templates
-
-Once you have filled in all the details, run
-
+#### Instantiate the template files.
 ~~~
-$ make -f k8s-tpl.mak templates
+$ make -f dataminers.mak initrepo
 ~~~
 
-This will check that all the programs you will need have been
-installed and are in the search path.  If any program is missing,
-install it before proceeding.
-
-The script will then generate makefiles personalized to the data that
-you entered in `clusters/tpl-vars.txt`.
-
-**Note:** This is the *only* time you will call `k8s-tpl.mak`
-directly. This creates all the non-templated files, such as
-`k8s.mak`.  You will use the non-templated makefiles in all the
-remaining steps.
-
-### 2. Ensure AWS DynamoDB is accessible/running
-
-Regardless of where your cluster will run, it uses AWS DynamoDB
-for its backend database. Check that you have the necessary tables
-installed by running
-
+#### Starting the EKS Cluster.
+This step can take some time
 ~~~
-$ aws dynamodb list-tables
+$ make -f dataminers.mak starteks
+~~~
+#### Create namespace inside each cluster and set each context
+~~~
+$ make -f dataminers.mak initns
 ~~~
 
-The resulting output should include tables `User` and `Music`.   
+#### To view the current context and all AWS clusters and nodegroups
+~~~
+$ make -f dataminers.mak listeks
+~~~
 
-----
+#### Creating the DynamoDB Tables
+~~~
+$ make -f dataminers.mak initdb
+~~~
+
+#### Deploy User, Music and Bookstore service
+~~~
+$ make -f dataminers.mak deploy
+~~~
+
+#### Start simulation with desired number of Users
+~~~
+$ make -f dataminers.mak startsimulation NUM_OF_USERS=5
+~~~
+
+
+#### View the simulation with Grafana, Prometheus, Kiali 
+~~~
+$ make -f dataminers.mak simulation-url
+~~~
+
+
+#### Stop Simulations
+
+List the Simulation Docker Container
+~~~
+$ docker ps -a
+~~~
+
+Stop the containers running with `ghcr.io/scp-2021-jan-cmpt-756/gatling:3.4.2` Image
+~~~
+$ docker stop <container-id>
+~~~
