@@ -49,6 +49,21 @@ def create_user(lname, fname, email, uuid):
               "uuid": uuid})
     return (response.json())
 
+def create_book(Author, BookTitle, uuid):
+    """
+    Create a Book.
+    """
+    url = db['name'] + '/load'
+    response = requests.post(
+        url,
+        auth=build_auth(),
+        json={"objtype": "book",
+              "Author": Author,
+              "BookTitle": BookTitle,
+              "uuid": uuid})
+    print(f"Loader Response Book:{response}::")
+    return (response.json())
+
 
 def create_song(artist, title, uuid):
     """
@@ -84,7 +99,7 @@ if __name__ == '__main__':
         rdr = csv.reader(inp)
         next(rdr)  # Skip header
         for fn, ln, email, uuid in rdr:
-            resp = create_user(fn.strip(),
+            resp = create_user(fn.strip().lower(),
                                ln.strip(),
                                email.strip(),
                                uuid.strip())
@@ -94,6 +109,20 @@ if __name__ == '__main__':
                                                                   ln,
                                                                   email,
                                                                   uuid))
+
+    with open('{}/book/book.csv'.format(resource_dir), 'r') as inp:
+        rdr = csv.reader(inp)
+        next(rdr)  # Skip header
+        for Author, BookTitle, UUID in rdr:
+            resp = create_book(Author.strip().lower(),
+                               BookTitle.strip(),
+                               UUID.strip()
+                               )
+            resp = check_resp(resp, 'book_id')
+            if resp is None or resp != UUID:
+                print('Error creating Book {} {} ({}), {}'.format(Author,
+                                                                  BookTitle,
+                                                                  UUID))
 
     with open('{}/music/music.csv'.format(resource_dir), 'r') as inp:
         rdr = csv.reader(inp)
@@ -107,3 +136,4 @@ if __name__ == '__main__':
                 print('Error creating song {} {}, {}'.format(artist,
                                                              title,
                                                              uuid))
+                                                             

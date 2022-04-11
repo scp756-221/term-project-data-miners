@@ -74,5 +74,5 @@ cd:
 
 # Vendor-agnostic but subtarget of vendor-specific targets such as "start"
 showcontext:
-	$(KC) config get-contexts
+	$(KC) config get-contexts 
 

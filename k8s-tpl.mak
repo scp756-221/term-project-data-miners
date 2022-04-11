@@ -64,12 +64,12 @@ templates:
 #
 #  Nov 2021: Kiali is causing problems so do not deploy
 #provision: istio prom kiali deploy
-provision: istio prom deploy
+provision: istio prom deploy kiali
 
 # --- deploy: Deploy and monitor the three microservices
 # Use `provision` to deploy the entire stack (including Istio, Prometheus, ...).
 # This target only deploys the sample microservices
-deploy: appns gw s1 s2 db monitoring
+deploy: appns gw s1 s2 db bookstore monitoring
 	$(KC) -n $(APP_NS) get gw,vs,deploy,svc,pods
 
 # --- rollout: Rollout new deployments of all microservices
@@ -177,6 +177,7 @@ loader: dynamodb-init $(LOG_DIR)/loader.repo.log cluster/loader.yaml
 	$(KC) -n $(APP_NS) delete --ignore-not-found=true jobs/cmpt756loader
 	tools/build-configmap.sh gatling/resources/users.csv cluster/users-header.yaml | kubectl -n $(APP_NS) apply -f -
 	tools/build-configmap.sh gatling/resources/music.csv cluster/music-header.yaml | kubectl -n $(APP_NS) apply -f -
+	tools/build-configmap.sh gatling/resources/book.csv cluster/book-header.yaml | kubectl -n $(APP_NS) apply -f -
 	$(KC) -n $(APP_NS) apply -f cluster/loader.yaml | tee $(LOG_DIR)/loader.log
 
 # --- dynamodb-init: set up our DynamoDB tables
@@ -287,6 +288,12 @@ s2: rollout-s2 cluster/s2-svc.yaml cluster/s2-sm.yaml cluster/s2-vs.yaml
 	$(KC) -n $(APP_NS) apply -f cluster/s2-sm.yaml | tee -a $(LOG_DIR)/s2.log
 	$(KC) -n $(APP_NS) apply -f cluster/s2-vs.yaml | tee -a $(LOG_DIR)/s2.log
 
+# Update bookstore and associated monitoring, rebuilding if necessary
+bookstore: $(LOG_DIR)/bookstore.repo.log cluster/bookstore.yaml cluster/bookstore-sm.yaml cluster/bookstore-vs.yaml
+	$(KC) -n $(APP_NS) apply -f cluster/bookstore.yaml | tee $(LOG_DIR)/bookstore.log
+	$(KC) -n $(APP_NS) apply -f cluster/bookstore-sm.yaml | tee -a $(LOG_DIR)/bookstore.log
+	$(KC) -n $(APP_NS) apply -f cluster/bookstore-vs.yaml | tee -a $(LOG_DIR)/bookstore.log
+
 # Update DB and associated monitoring, rebuilding if necessary
 db: $(LOG_DIR)/db.repo.log cluster/awscred.yaml cluster/dynamodb-service-entry.yaml cluster/db.yaml cluster/db-sm.yaml cluster/db-vs.yaml
 	$(KC) -n $(APP_NS) apply -f cluster/awscred.yaml | tee $(LOG_DIR)/db.log
@@ -296,7 +303,13 @@ db: $(LOG_DIR)/db.repo.log cluster/awscred.yaml cluster/dynamodb-service-entry.y
 	$(KC) -n $(APP_NS) apply -f cluster/db-vs.yaml | tee -a $(LOG_DIR)/db.log
 
 # Build & push the images up to the CR
-cri: $(LOG_DIR)/s1.repo.log $(LOG_DIR)/s2-$(S2_VER).repo.log $(LOG_DIR)/db.repo.log
+cri: $(LOG_DIR)/s1.repo.log $(LOG_DIR)/s2-$(S2_VER).repo.log $(LOG_DIR)/db.repo.log $(LOG_DIR)/bookstore.repo.log
+
+# Build the bookstore service
+$(LOG_DIR)/bookstore.repo.log: bookstore/Dockerfile bookstore/app.py bookstore/requirements.txt
+	make -f k8s.mak --no-print-directory registry-login
+	$(DK) build $(ARCH) -t $(CREG)/$(REGID)/cmpt756bookstore:$(APP_VER_TAG) bookstore | tee $(LOG_DIR)/bookstore.img.log
+	$(DK) push $(CREG)/$(REGID)/cmpt756bookstore:$(APP_VER_TAG) | tee $(LOG_DIR)/bookstore.repo.log
 
 # Build the s1 service
 $(LOG_DIR)/s1.repo.log: s1/Dockerfile s1/app.py s1/requirements.txt
